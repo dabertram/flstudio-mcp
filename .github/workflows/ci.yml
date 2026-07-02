@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main, macos-parity-hardening]
+  pull_request:
+
+jobs:
+  test:
+    name: lint + type-check + tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install (editable + dev)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install mypy
+
+      - name: Ruff (lint)
+        run: ruff check src/ tests/
+
+      - name: Mypy (type-check, gradual — informational)
+        run: mypy src/fl_studio_mcp
+        continue-on-error: true
+
+      - name: Pytest (unit + integration; excludes live-FL tests)
+        run: pytest -m "not live" -q
