@@ -398,6 +398,8 @@ def diagnose(snapshot):
         findings += rule_headroom(tracks)
         findings += _imbalance(tracks, "peak_db", "peak", IMBALANCE_DB)
     else:
+        notes.append("PARTIAL DIAGNOSIS: level-based checks (clipping, headroom, "
+                     "peak balance) were NOT run -- no level data.")
         notes.append("Project STOPPED -- level rules (clipping, headroom, peak "
                      "imbalance) skipped. Press play and re-run, or use watch mode "
                      "(fl_mix_watch_start -> play the full song -> fl_mix_watch_stop).")
@@ -411,7 +413,8 @@ def diagnose(snapshot):
     summary = {sev: sum(1 for f in findings if f["severity"] == sev)
                for sev in ("high", "medium", "low")}
     return {"playing": playing, "track_count": len(tracks),
-            "findings": findings, "notes": notes, "summary": summary}
+            "findings": findings, "notes": notes, "summary": summary,
+            "levels_valid": bool(levels_valid), "diagnosis_complete": bool(levels_valid)}
 
 
 # --------------------------------------------------------------------------
