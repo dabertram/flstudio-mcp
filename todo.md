@@ -54,41 +54,41 @@
 
 ## Phase F — Feature Expansion (Tier 1 + Tier 2)
 ### Tier 1 (proven quick wins)
-- [ ] F-T1a: Unblock generator (slot=-1) addressing in plugin tools
-- [ ] F-T1b: Playlist track tools (mute/solo/rename/color/select) — thin handlers + MCP tools + rollback
-- [ ] F-T1c: Arrangement read tools (current time, selection range, marker list) — read-only
+- [x] F-T1a: Unblock generator (slot=-1) addressing in plugin tools
+- [ ] F-T1b: Playlist track tools (mute/solo/rename/color/select) — needs controller handlers + live FL API verification
+- [ ] F-T1c: Arrangement read tools (current time, selection range, marker list) — needs controller handlers + live FL API verification
 ### Tier 2 (proven-API, moderate)
-- [ ] F-T2a: Channel step-sequencer grid tools (get grid / set step / clear grid) — new controller handlers + protocol cmds
-- [ ] F-T2b: Pattern management completion (select / rename / get-length handlers + tools)
-- [ ] F-T2c: Extend VST comp/EQ intent coverage (reuse calibrate→intent; DO NOT re-implement base comp intent — already exists)
+- [ ] F-T2a: Channel step-sequencer grid tools — needs controller handlers + live FL API verification
+- [x] F-T2b: Pattern management (select / rename / get-length handlers + tools) — server+controller done; live-validate in H
+- [x] F-T2c: VST comp/EQ intent coverage — superseded by generic F3 calibrate->intent (base comp intent already existed)
 ### Cross-cutting
-- [ ] F-X1: Keep controller thin; judgement server-side
-- [ ] F-X2: Paginate responses >~500B (SysEx ~1.5KB ceiling)
-- [ ] F-X3: All state-changing tools rollback-safe
+- [x] F-X1: Keep controller thin; judgement server-side
+- [x] F-X2: Paginate responses >~500B (SysEx ~1.5KB ceiling)
+- [x] F-X3: All state-changing tools rollback-safe
 
 ## Phase F3 — Generic Deep VST/AU Control Layer (headline vision)
 ### Layer 0 — Enumeration & discovery
-- [ ] F3-0a: Fix macOS FL plugin-DB discovery (verify path; add to find_plugin_db + env override)
-- [ ] F3-0b: Enumerate actually-installed plugins on the machine; identify ambiguous names (love/hate/tekno/audija kickdrum)
-- [ ] F3-0c: Ensure generator addressing (slot=-1) works end-to-end (ties to F-T1a)
+- [x] F3-0a: Fix macOS FL plugin-DB discovery (layout matches Windows; verified via paths.py + live enumeration)
+- [x] F3-0b: Enumerate actually-installed plugins; ambiguous names resolved (Tekno=generator; KickDrum/BassDrum/Fruit Kick; love/hate not standalone)
+- [x] F3-0c: Generator addressing (slot=-1) works end-to-end (server side; live-validate in H)
 ### Layer 1 — Generic parameter interface
-- [ ] F3-1a: Full param dump w/ name+value+display string — extend to generators + large sets
-- [ ] F3-1b: Param search/filter by name substring
-- [ ] F3-1c: Batch set (multiple params as one rollback unit)
-- [ ] F3-1d: Value-string-aware set (return display string for LLM iteration toward unit target)
+- [x] F3-1a: Full param dump w/ name+value+display string — extended to generators
+- [x] F3-1b: Param search/filter by name substring (fl_plugin_find_params)
+- [x] F3-1c: Batch set (multiple params as one rollback unit) (fl_plugin_set_params)
+- [x] F3-1d: Value-string-aware set (fl_plugin_set_param_value returns achieved string)
 ### Layer 2 — Curated semantic maps
-- [ ] F3-2a: Auto-group params by role (osc/filter/env/LFO/macros/master) via prefix heuristics
-- [ ] F3-2b: Hand-authored curated maps for popular installed synths (Vital, Zebralette, Serum, ...) as pure data modules
+- [x] F3-2a: Auto-group params by role (vst_params.group_params_by_role)
+- [ ] F3-2b: Hand-authored curated maps per synth — DEFERRED to live (needs verified param dumps of Vital/Serum2/Zebralette3/Surge XT)
 ### Layer 3 — Runtime calibration
-- [ ] F3-3a: Runtime sweep tool (sweep param 0..1, parse value strings, build norm↔unit table)
-- [ ] F3-3b: Safety — snapshot param first, restore after sweep
-- [ ] F3-3c: Cache maps w/ re-validation on connect (dedupe 30-char name truncation collisions)
-- [ ] F3-3d: PERSIST calibration cache to disk (~/.flstudio-mcp/) keyed by signature (plugin name + param count + sample name/index pairs); re-validate on connect, re-sweep on mismatch; in-memory layer on top
+- [x] F3-3a: Runtime sweep tool (calibration.sweep_param + fl_plugin_calibrate_param)
+- [x] F3-3b: Safety — snapshot param first, restore after sweep
+- [x] F3-3c: Cache maps w/ re-validation on connect (signature-keyed)
+- [x] F3-3d: PERSIST calibration cache to disk (~/.flstudio-mcp/calibration/) w/ signature + re-sweep on mismatch
 ### Layer 4 — Generic semantic intents
-- [ ] F3-4a: High-level moves (brighter/warmer/more attack/wider/resonance/release) mapped to calibrated params via role detection
-- [ ] F3-4b: Reuse calibrate→interp→intent; degrade to raw normalized when not calibratable
+- [x] F3-4a: High-level moves mapped to calibrated params via role detection (fl_plugin_intent)
+- [x] F3-4b: Reuse calibrate→interp→intent; degrade to raw normalized when not calibratable
 ### Degradation
-- [ ] F3-5: 3-tier degradation surfaced to LLM (full names+strings / normalized+range / opaque Param N + warning); flag macro/NKS-walled params
+- [x] F3-5: 3-tier degradation surfaced (classify_param_exposure: full/partial/opaque) in fl_plugin_overview
 
 ## Phase G — Docs, Packaging, Finalization (Windows-first until final)
 - [ ] G1: Keep README Windows-first during hardening
@@ -97,15 +97,15 @@
 - [ ] G4: Adjust packaging metadata/deps (true platform support; optional platform extras; make pygetwindow optional)
 
 ## Phase G2 — One-Command Installer + MCP Client Auto-Registration (macOS-first)
-- [ ] G2-1: Single entry-point installer (deps, controller deploy, piano-roll seed, port verify+remediation, daemon guidance, client registration)
-- [ ] G2-2: MCP client detection (Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Cline, Zed, Continue, ...)
-- [ ] G2-3: CLI selection UX (auto-all / interactive multi-select / --clients flag; --dry-run; --list-detected)
-- [ ] G2-4: Safe idempotent config merge (create-if-missing, timestamped backup, insert-if-absent, JSON validate, --restore)
-- [ ] G2-5: Per-client schema handling (mcpServers vs VS Code "servers" vs Zed "context_servers")
-- [ ] G2-6: Registration payload (fl-studio-mcp stdio, FLSTUDIO_MCP_TRANSPORT=tcp default) consistent w/ server.json
-- [ ] G2-7: VERIFY exact config paths/keys against official docs (research draft had inaccuracies) — one table module + self-test
-- [ ] G2-8: For non-standard clients, print copy-paste JSON + path instead of blind write
-- [ ] G2-9: Uninstall/deregister path using same idempotent+backup logic
+- [x] G2-1: Single entry-point installer (fl-studio-mcp-install) + macOS install_macos.sh reworked (C6)
+- [x] G2-2: MCP client detection (Claude Desktop, Cursor, Windsurf, VS Code, Zed, Claude Code)
+- [x] G2-3: CLI selection UX (--all / --clients / --list / --dry-run)
+- [x] G2-4: Safe idempotent config merge (create-if-missing, timestamped backup, insert-if-absent, JSON validate, --restore)
+- [x] G2-5: Per-client schema handling (mcpServers vs VS Code 'servers' vs Zed 'context_servers')
+- [x] G2-6: Registration payload (fl-studio-mcp stdio, FLSTUDIO_MCP_TRANSPORT=tcp) consistent w/ server.json
+- [x] G2-7: Verified config paths per client (auto only for dedicated-file clients)
+- [x] G2-8: For non-standard clients, print copy-paste JSON + path instead of blind write
+- [x] G2-9: Uninstall/deregister path (--uninstall) using same idempotent logic
 
 ## Phase G3 — ROADMAP Integration
 - [ ] G3-1: Fold GitHub Actions (lint + mock-FL tests) into F2 CI (single source of truth)

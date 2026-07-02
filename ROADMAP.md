@@ -134,11 +134,34 @@ so it ships inside the wheel.
 - [ ] `evals/evals.json` — 10 questions exercising the full tool surface.
 - [ ] `.claude-plugin/marketplace.json` so this can live in
       `rosasynthesiz-skills` as an installable plugin.
-- [ ] `AGENTS.md` describing the agentic workflow for future Claude sessions
+- [x] `AGENTS.md` describing the agentic workflow for future Claude sessions
       working on this codebase.
 - [ ] Demo video and screenshots in `docs/`.
-- [ ] GitHub Actions for linting and the standalone bridge tests (mock FL).
+- [x] GitHub Actions for linting and the standalone bridge tests (mock FL).
 - [ ] Pin a known-working FL Studio version range in README.
+
+## Cross-platform hardening (2026, in progress on `macos-parity-hardening`)
+
+Bringing production-quality macOS support alongside Windows, plus a test/CI
+foundation and a generic deep VST control layer. Shipped so far:
+
+- **Tests/CI**: pytest suite (offline pure-logic + mock-FL bridge), GitHub
+  Actions (ruff + pytest on 3.10–3.12; mypy informational), gradual typing.
+- **Cross-platform bug fixes**: platform-adapter script trigger (no more
+  `ctypes.windll` at import on macOS), centralised FL path discovery, atomic
+  change-log, port cleanup on exit, clearer mix-doctor partial-diagnosis signal.
+- **macOS parity**: self-provisioning **virtual CoreMIDI ports** (no manual IAC
+  setup), reworked `install_macos.sh`, `fl_capabilities` introspection.
+- **Generic deep VST control**: generator (`slot=-1`) addressing, param search,
+  role grouping + controllability tiers, runtime unit calibration with a
+  persistent cache, unit-targeted set, and semantic intents — for any plugin.
+- **Setup**: `fl-studio-mcp-install` detects MCP clients and registers the
+  server safely (backup + idempotent merge).
+
+Remaining (needs a live FL session to validate): playlist/arrangement-read/
+channel-grid controller handlers, per-synth curated param maps, and the
+end-to-end macOS parity pass. README support messaging stays Windows-first
+until that validation completes.
 
 ## Out of scope (intentionally)
 
