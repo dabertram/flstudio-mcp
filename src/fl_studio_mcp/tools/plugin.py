@@ -21,7 +21,7 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastmcp import FastMCP
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from .. import protocol, safety
 from ..connection import fetch_all_pages, get_bridge
@@ -93,6 +93,11 @@ def filter_params_by_name(params, query, limit=50):
             if all(t in str(p.get("name", "")).lower() for t in toks)]
     hits.sort(key=lambda p: str(p.get("name", "")).lower())
     return hits[: max(1, int(limit))]
+
+
+class PluginParamSet(BaseModel):
+    param: int | str = Field(description="Param index (int) or name (str).")
+    value: float = Field(ge=0.0, le=1.0, description="Normalised 0..1.")
 
 
 def register(mcp: FastMCP) -> None:
@@ -178,3 +183,37 @@ def register(mcp: FastMCP) -> None:
         return {"track": track, "slot": slot, "query": query,
                 "total_params": dump.get("total", len(params)),
                 "match_count": len(matches), "params": matches}
+
+    @mcp.tool(annotations={"title": "Set multiple plugin parameters (one undo)", **_WR})
+    def fl_plugin_set_params(
+        track: Annotated[int, Field(ge=0)],
+        slot: Annotated[int, Field(ge=-1, le=9,
+            description="Mixer-track effect slot 0-9, OR -1 for the channel-rack "
+                        "generator (then `track` is the CHANNEL index).")],
+        params: Annotated[list[PluginParamSet], Field(
+            description="Params to set together, each {param (index/name), value 0..1}.")],
+    ) -> dict:
+        """Set several parameters at once as ONE reversible change -- a coherent
+        patch move (e.g. shape an oscillator + filter + envelope together) that
+        fl_rollback_last_change undoes in a single step. Each param may be an
+        index or a name; values are normalised 0..1."""
+        if not params:
+            return {"ok": False, "error": "no params given"}
+        bridge = get_bridge()
+        resolved, writes = [], []
+        for spec in params:
+            idx, name = resolve_param_index(bridge, track, slot, spec.param)
+            resolved.append({"index": idx, "name": name, "value": spec.value})
+            writes.append({
+                "snap_scope": "plugin_param:%d:%d:%d" % (track, slot, idx),
+                "command": protocol.CMD_PLUGIN_SET_PARAM,
+                "params": {"track": track, "slot": slot, "param": idx, "value": spec.value},
+                "restore": (lambda b, i=idx: {"command": protocol.CMD_PLUGIN_SET_PARAM,
+                                              "params": {"track": track, "slot": slot,
+                                                         "param": i, "value": b["v"]}}),
+            })
+        result = safety.safe_write_group(bridge, tool="plugin_set_params",
+                                         scope="plugin:%d:%d" % (track, slot), writes=writes)
+        if isinstance(result, dict):
+            result["resolved_params"] = resolved
+        return result
