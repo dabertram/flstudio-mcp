@@ -8,7 +8,7 @@ universal reset.
 """
 from __future__ import annotations
 
-from typing import Annotated, List, Optional, Union
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -60,8 +60,8 @@ def register(mcp: FastMCP) -> None:
 
     @mcp.tool(annotations={"title": "Solo a group of tracks", **_WR})
     def fl_solo_tracks(
-        category: Annotated[Optional[str], Field(description="Role to isolate: 'drums', 'vocals', 'bass', 'synth', 'guitar' (or any track-name substring).")] = None,
-        tracks: Annotated[Optional[List[Union[int, str]]], Field(description="Explicit track indices or name substrings to keep audible.")] = None,
+        category: Annotated[str | None, Field(description="Role to isolate: 'drums', 'vocals', 'bass', 'synth', 'guitar' (or any track-name substring).")] = None,
+        tracks: Annotated[list[int | str] | None, Field(description="Explicit track indices or name substrings to keep audible.")] = None,
     ) -> dict:
         """Isolate a group so only it is audible -- mutes every OTHER (non-Master)
         track. Use category ('drums', etc.) or explicit tracks. Implemented as
@@ -86,8 +86,8 @@ def register(mcp: FastMCP) -> None:
 
     @mcp.tool(annotations={"title": "Mute a group of tracks", **_WR})
     def fl_mute_tracks(
-        category: Annotated[Optional[str], Field(description="Role to mute (or any track-name substring).")] = None,
-        tracks: Annotated[Optional[List[Union[int, str]]], Field(description="Explicit track indices or name substrings to mute.")] = None,
+        category: Annotated[str | None, Field(description="Role to mute (or any track-name substring).")] = None,
+        tracks: Annotated[list[int | str] | None, Field(description="Explicit track indices or name substrings to mute.")] = None,
     ) -> dict:
         """Mute a group of tracks (leaves the others as they are). Use category or
         explicit tracks. One rollback unit; reverse with fl_clear_mute_solo."""

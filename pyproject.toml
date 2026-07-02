@@ -76,3 +76,33 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = [
+    # `%`-style string formatting is a deliberate, pervasive convention in this
+    # codebase (controller + tools). Not worth a large, risky mass-rewrite.
+    "UP031",
+    # Long lines are almost all human-readable error/help strings; enforcing a
+    # hard wrap on them hurts readability more than it helps.
+    "E501",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "--strict-markers -q"
+markers = [
+    "unit: pure-function tests (no I/O, no FL)",
+    "integration: tests that use the mock FL bridge",
+    "live: requires a running FL Studio + MIDI bridge (not run in CI)",
+]
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+check_untyped_defs = true
+# Gradual adoption: don't require annotations everywhere yet.
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+ignore_missing_imports = true
+exclude = "(^tests/|^scripts/)"

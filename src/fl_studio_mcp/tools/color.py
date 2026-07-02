@@ -9,7 +9,7 @@ fl_rollback_last_change restores the previous colors in a single step.
 """
 from __future__ import annotations
 
-from typing import Annotated, List, Optional, Union
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -17,7 +17,6 @@ from pydantic import Field
 from .. import protocol, safety
 from ..connection import fetch_all_pages, get_bridge
 from .bulk import resolve_targets
-
 
 # A small, clear palette -- (R, G, B), 0-255. Lowercased name -> rgb. Anything
 # not here can still be given as a hex string.
@@ -98,8 +97,8 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(annotations={"title": "Color mixer tracks", **_WR})
     def fl_set_track_color(
         color: Annotated[str, Field(description="Color name (red, orange, amber, yellow, lime, green, teal, cyan, blue, indigo, purple, violet, magenta, pink, brown, gray, white, black) or a hex like '#33A1FF'.")],
-        category: Annotated[Optional[str], Field(description="Group to color: 'drums', 'vocals', 'bass', 'synth', 'guitar' (or any mixer-track name substring).")] = None,
-        tracks: Annotated[Optional[List[Union[int, str]]], Field(description="Explicit mixer-track indices or name substrings.")] = None,
+        category: Annotated[str | None, Field(description="Group to color: 'drums', 'vocals', 'bass', 'synth', 'guitar' (or any mixer-track name substring).")] = None,
+        tracks: Annotated[list[int | str] | None, Field(description="Explicit mixer-track indices or name substrings.")] = None,
     ) -> dict:
         """Set the color of mixer tracks. Pick targets by category ('drums',
         'bass', ...) or an explicit tracks list; choose a color by name or hex.
@@ -135,7 +134,7 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(annotations={"title": "Color channels", **_WR})
     def fl_set_channel_color(
         color: Annotated[str, Field(description="Color name or hex (same set as fl_set_track_color).")],
-        channels: Annotated[Optional[List[Union[int, str]]], Field(description="Channel-rack indices or name substrings to color.")] = None,
+        channels: Annotated[list[int | str] | None, Field(description="Channel-rack indices or name substrings to color.")] = None,
     ) -> dict:
         """Set the color of channel-rack channels (separate from mixer-track
         color). Target by index or name substring. ONE rollback unit --

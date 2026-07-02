@@ -18,7 +18,7 @@ normalised value maps to -- there is no generic unit->normalised conversion.
 
 from __future__ import annotations
 
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -109,7 +109,7 @@ def register(mcp: FastMCP) -> None:
     def fl_plugin_set_param(
         track: Annotated[int, Field(ge=0)],
         slot: Annotated[int, Field(ge=0, le=9)],
-        param: Annotated[Union[int, str],
+        param: Annotated[int | str,
                          Field(description="Param index (int) or name (str, e.g. 'Decay time').")],
         value: Annotated[float, Field(ge=0.0, le=1.0, description="Normalised 0..1.")],
     ) -> dict:

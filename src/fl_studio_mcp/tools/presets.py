@@ -7,7 +7,7 @@ its params via the existing plugin tools (fl_plugin_set_param / fl_apply_*_inten
 """
 from __future__ import annotations
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -22,7 +22,7 @@ def register(mcp: FastMCP) -> None:
 
     @mcp.tool(annotations={"title": "List presets (from disk)", **_RO})
     def fl_list_presets(
-        plugin_filter: Annotated[Optional[str], Field(description="Plugin to narrow to (e.g. 'Serum', 'Fruity Parametric EQ 2'); omit for a summary.")] = None,
+        plugin_filter: Annotated[str | None, Field(description="Plugin to narrow to (e.g. 'Serum', 'Fruity Parametric EQ 2'); omit for a summary.")] = None,
     ) -> dict:
         r"""Read preset NAMES from disk: FL Presets\ (per-plugin 'Plugin presets',
         plus Channel/Mixer presets) + Serum 2 Presets (.serumpreset). With NO

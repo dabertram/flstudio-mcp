@@ -239,26 +239,36 @@ def register(mcp: FastMCP) -> None:
             writes.append(_param_write(track, slot, P[name]["i"], target_norm))
 
         if intent == "more_space":
-            d = _lerp(1.5, 6.0, intensity); add("Decay time", rd.decay_to_norm(d))
-            w = min(125.0, rd.norm_to_wet(P["Wet level"]["v"]) + 15.0); add("Wet level", rd.wet_to_norm(w))
+            d = _lerp(1.5, 6.0, intensity)
+            add("Decay time", rd.decay_to_norm(d))
+            w = min(125.0, rd.norm_to_wet(P["Wet level"]["v"]) + 15.0)
+            add("Wet level", rd.wet_to_norm(w))
             setp = {"decay_s": round(d, 2), "wet_pct": round(w)}
         elif intent == "tighten_reverb":
-            d = _lerp(1.5, 0.6, intensity); add("Decay time", rd.decay_to_norm(d))
-            w = max(0.0, rd.norm_to_wet(P["Wet level"]["v"]) - 10.0); add("Wet level", rd.wet_to_norm(w))
+            d = _lerp(1.5, 0.6, intensity)
+            add("Decay time", rd.decay_to_norm(d))
+            w = max(0.0, rd.norm_to_wet(P["Wet level"]["v"]) - 10.0)
+            add("Wet level", rd.wet_to_norm(w))
             setp = {"decay_s": round(d, 2), "wet_pct": round(w)}
         elif intent == "darker_reverb":
             # move the high-cut DOWN toward a dark ~2 kHz floor (works whether it
             # starts at Off or already partway down).
-            new = _lerp(P["High cut"]["v"], rd.highcut_to_norm(2000.0), intensity); add("High cut", new)
-            hz = rd.norm_to_highcut_hz(new); setp = {"high_cut": "Off" if hz is None else round(hz)}
+            new = _lerp(P["High cut"]["v"], rd.highcut_to_norm(2000.0), intensity)
+            add("High cut", new)
+            hz = rd.norm_to_highcut_hz(new)
+            setp = {"high_cut": "Off" if hz is None else round(hz)}
         elif intent == "brighter_reverb":
-            new = _lerp(P["High cut"]["v"], rd.HIGHCUT_OFF_NORM, intensity); add("High cut", new)
-            hz = rd.norm_to_highcut_hz(new); setp = {"high_cut": "Off" if hz is None else round(hz)}
+            new = _lerp(P["High cut"]["v"], rd.HIGHCUT_OFF_NORM, intensity)
+            add("High cut", new)
+            hz = rd.norm_to_highcut_hz(new)
+            setp = {"high_cut": "Off" if hz is None else round(hz)}
         elif intent == "more_reverb":
-            w = min(125.0, rd.norm_to_wet(P["Wet level"]["v"]) + 30.0 * intensity); add("Wet level", rd.wet_to_norm(w))
+            w = min(125.0, rd.norm_to_wet(P["Wet level"]["v"]) + 30.0 * intensity)
+            add("Wet level", rd.wet_to_norm(w))
             setp = {"wet_pct": round(w)}
         elif intent == "less_reverb":
-            w = max(0.0, rd.norm_to_wet(P["Wet level"]["v"]) - 30.0 * intensity); add("Wet level", rd.wet_to_norm(w))
+            w = max(0.0, rd.norm_to_wet(P["Wet level"]["v"]) - 30.0 * intensity)
+            add("Wet level", rd.wet_to_norm(w))
             setp = {"wet_pct": round(w)}
 
         res = safety.safe_write_group(bridge, tool="apply_reverb_intent",

@@ -56,7 +56,7 @@ def measure_many(bridge, tracks, samples=15, interval_ms=100):
 
         {track: {track, playing, avg_db, peak_db, peak_lin, n_reads}}
     """
-    acc = {t: [] for t in tracks}
+    acc: dict = {t: [] for t in tracks}
     for _ in range(max(1, int(samples))):
         for t in tracks:
             try:

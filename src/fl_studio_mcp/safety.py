@@ -15,14 +15,13 @@ from collections import deque
 from pathlib import Path
 
 from .protocol import (
-    CMD_MIXER_GET_TRACK,
     CMD_CHANNEL_GET,
-    CMD_MIXER_LIST_TRACKS,
     CMD_CHANNEL_LIST,
-    CMD_PLUGIN_GET_PARAM,
     CMD_MIXER_GET_ROUTING,
+    CMD_MIXER_GET_TRACK,
+    CMD_MIXER_LIST_TRACKS,
+    CMD_PLUGIN_GET_PARAM,
 )
-
 
 _DIR = Path.home() / ".flstudio-mcp"
 _PATH = _DIR / "changelog.jsonl"

@@ -83,7 +83,8 @@ def finding(rule, severity, track, evidence, message, fix):
 def _fetch_params_bounded(bridge, protocol, track, slot, cap):
     """Page a plugin's params, stopping at ``cap`` (so a VST monster on a mixer
     slot can't blow up the snapshot). Effects we diagnose are small anyway."""
-    params, start = [], 0
+    params: list = []
+    start = 0
     for _ in range(50):
         page = bridge.call(protocol.CMD_PLUGIN_GET_PARAMS,
                            {"track": track, "slot": slot, "start": start})
@@ -134,7 +135,7 @@ def gather_snapshot(bridge, *, with_params=True, max_tracks=64, param_cap=120,
 
     # Peak source: override (full-song WATCH max) > sustained window (playing) >
     # none (stopped). levels_valid gates the level rules.
-    peaks = {}
+    peaks: dict = {}
     if peaks_override is not None:
         levels_valid, peak_source = True, "watch"
     elif playing:
@@ -303,7 +304,7 @@ def _dests(t):
 
 def rule_ungrouped(tracks):
     out = []
-    fams = {}
+    fams: dict = {}
     for t in _audible(tracks):
         nm = (t.get("name") or "").lower()
         for fam, kws in FAMILIES.items():
@@ -333,7 +334,7 @@ def _eq_boosted_bands(params):
     Relies on the plugin exposing per-band 'level/gain' + 'freq' params whose
     display strings read like '3.6 dB' / '240 Hz'. If the names don't cooperate
     this simply returns nothing (no false positives)."""
-    bands = {}
+    bands: dict = {}
     for p in params:
         name = (p.get("name") or "")
         s = p.get("s") or ""
@@ -365,7 +366,7 @@ def rule_eq_clash(tracks):
                 continue
             for b in _eq_boosted_bands(p.get("params") or []):
                 boosts.append((t["name"], b["freq"], b["gain"]))
-    by_bucket = {}
+    by_bucket: dict = {}
     for name, hz, g in boosts:
         bucket = _octave_bucket(hz)
         if bucket is not None:
@@ -559,7 +560,7 @@ def mix_band_balance(snapshot):
     band SHARES (%). NOT a spectral read of FL's actual output (FL doesn't expose
     output audio) -- a coarse estimate for reference comparison only. PURE."""
     energy = {"low": 0.0, "mid": 0.0, "high": 0.0}
-    buckets = {"low": [], "mid": [], "high": []}
+    buckets: dict = {"low": [], "mid": [], "high": []}
     for t in snapshot.get("tracks", []):
         if t.get("index") == 0 or t.get("mute"):
             continue

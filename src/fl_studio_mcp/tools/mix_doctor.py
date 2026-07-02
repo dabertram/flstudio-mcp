@@ -11,7 +11,7 @@ fl_group_tracks / fl_apply_eq_intent tools (reuse, not re-implement).
 from __future__ import annotations
 
 import math
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -82,8 +82,8 @@ def register(mcp: FastMCP) -> None:
     @mcp.tool(annotations={"title": "Apply a Mix Doctor fix (gated)", **_WR})
     def fl_apply_mix_fix(
         kind: Annotated[str, Field(description="Fix kind. Currently 'trim_volume' (the proven, safe one).")],
-        track: Annotated[Optional[int], Field(ge=0, description="Mixer track index (for trim_volume).")] = None,
-        target_db: Annotated[Optional[float], Field(description="Absolute target fader level in dB, e.g. -3.0.")] = None,
+        track: Annotated[int | None, Field(ge=0, description="Mixer track index (for trim_volume).")] = None,
+        target_db: Annotated[float | None, Field(description="Absolute target fader level in dB, e.g. -3.0.")] = None,
     ) -> dict:
         """Apply ONE Mix Doctor fix via the safety layer: snapshot -> write ->
         FRESH readback -> rollback-able with fl_rollback_last_change.

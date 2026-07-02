@@ -9,7 +9,7 @@ run 'MCP_Apply' once from the piano-roll Scripting menu so that
 
 from __future__ import annotations
 
-from typing import Annotated, List
+from typing import Annotated
 
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
@@ -37,7 +37,7 @@ def register(mcp: FastMCP) -> None:
         "openWorldHint": True,
     })
     def fl_write_piano_roll_notes(
-        notes: List[PianoRollNote],
+        notes: list[PianoRollNote],
         mode: Annotated[str, Field(
             description="'replace' clears the pattern first; 'append' adds to it.",
         )] = "replace",
