@@ -9,6 +9,7 @@ returns before+after so the caller (and a human) can see exactly what changed.
 from __future__ import annotations
 
 import json
+import os
 import threading
 import time
 from collections import deque
@@ -49,9 +50,13 @@ class ChangeLog:
     def _persist(self) -> None:
         try:
             _DIR.mkdir(parents=True, exist_ok=True)
-            _PATH.write_text(
-                "".join(json.dumps(e) + "\n" for e in self._dq), encoding="utf-8"
-            )
+            # Atomic write: serialise to a temp file in the same dir, then
+            # os.replace() over the target. Prevents a truncated/corrupt log if
+            # the process dies mid-write.
+            payload = "".join(json.dumps(e) + "\n" for e in self._dq)
+            tmp = _PATH.with_suffix(_PATH.suffix + ".tmp")
+            tmp.write_text(payload, encoding="utf-8")
+            os.replace(tmp, _PATH)
         except Exception:
             pass
 
