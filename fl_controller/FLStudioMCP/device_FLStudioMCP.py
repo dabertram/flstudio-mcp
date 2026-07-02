@@ -950,6 +950,42 @@ def _h_pattern_list(p):
     return _paginate(patterns.patternCount(), p.get("start", 0), entry, "patterns")
 
 
+def _h_pattern_select(p):
+    """Select (jump to) a pattern by its 1-based number. The note bridge then
+    writes into THIS pattern."""
+    pn = int(p["pattern"])
+    try:
+        patterns.jumpToPattern(pn)
+    except Exception as e:
+        return {"ok": False, "error": "jumpToPattern: %s" % e}
+    return {"ok": True, "pattern": pn, "name": patterns.getPatternName(pn),
+            "selected": patterns.patternNumber()}
+
+
+def _h_pattern_rename(p):
+    """Rename a pattern by its 1-based number."""
+    pn = int(p["pattern"])
+    name = str(p.get("name", ""))
+    try:
+        patterns.setPatternName(pn, name)
+    except Exception as e:
+        return {"ok": False, "error": "setPatternName: %s" % e}
+    return {"ok": True, "pattern": pn, "name": patterns.getPatternName(pn)}
+
+
+def _h_pattern_get_length(p):
+    """Pattern length. FL's getPatternLength returns beats; also report bars
+    (assuming 4/4). Raw value included so the server can re-derive if needed."""
+    pn = int(p["pattern"])
+    try:
+        raw = patterns.getPatternLength(pn)
+    except Exception as e:
+        return {"ok": False, "error": "getPatternLength: %s" % e}
+    return {"ok": True, "pattern": pn, "length_beats": raw,
+            "length_bars": (raw / 4.0) if isinstance(raw, (int, float)) else None,
+            "raw": raw}
+
+
 def _h_arrange_new_pattern(p):
     """Find the next empty pattern (or count+1), select it, name it. Selecting
     it is what lets the note bridge write INTO this pattern next."""
@@ -1100,4 +1136,7 @@ _HANDLERS = {
     "channel_select": _h_channel_select,
     "ensure_piano_roll": _h_ensure_piano_roll,
     "pattern_list": _h_pattern_list,
+    "pattern_select": _h_pattern_select,
+    "pattern_rename": _h_pattern_rename,
+    "pattern_get_length": _h_pattern_get_length,
 }
