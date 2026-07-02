@@ -28,6 +28,7 @@ from .protocol import port_from_fl_name, port_to_fl_name
 from .tools import arrange as arrange_tools
 from .tools import audio as audio_tools
 from .tools import bulk as bulk_tools
+from .tools import capabilities as capabilities_tools
 from .tools import chains as chains_tools
 from .tools import color as color_tools
 from .tools import compose as compose_tools
@@ -99,6 +100,7 @@ def build_server() -> FastMCP:
     export_tools.register(mcp)      # MIDI export: arrangement spec -> type-1 .mid on disk
     presets_tools.register(mcp)     # Preset suggester: read preset names from disk
     mix_doctor_tools.register(mcp)  # Mix Doctor: diagnose whole mix + gated apply-fixes
+    capabilities_tools.register(mcp)  # Capability introspection: automated vs manual per OS
     # Later tool packs register here as they ship:
     #   pattern_tools.register(mcp)
     return mcp

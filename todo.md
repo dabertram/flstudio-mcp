@@ -11,13 +11,13 @@
 - [x] Define cross-platform test matrix (manual + automated) before edits
 
 ## Phase B — Cross-Platform Bug Chapter (Windows + macOS)
-- [ ] B1: Replace Windows-only trigger surface (pyscript_trigger.py) with platform adapters + explicit fallback
-- [ ] B2: Normalize FL path discovery (plugin DB, preset DB, piano-roll scripts) for Win+mac with env overrides + actionable errors
-- [ ] B2a: Add macOS Serum preset path candidates (~/Music, ~/Library/Audio/Plug-in Support/Xfer)
-- [ ] B3: Harden bridge/daemon lifecycle + timeout handling on reconnect/restart (no Windows regression)
-- [ ] B4: Concurrency review — PeakWatcher stop/read lock; safety-log persistence under parallel writes; add tests
-- [ ] B5: Improve mix-doctor level-valid gating so partial diagnosis is clearly surfaced (not silent)
-- [ ] B6: Verify FLBridge close/cleanup on crash/exit (no orphaned MIDI ports)
+- [x] B1: Replace Windows-only trigger surface (pyscript_trigger.py) with platform adapters + explicit fallback
+- [x] B2: Normalize FL path discovery (plugin DB, preset DB, piano-roll scripts) for Win+mac with env overrides + actionable errors
+- [x] B2a: Add macOS Serum preset path candidates (~/Music, ~/Library/Audio/Plug-in Support/Xfer)
+- [x] B3: Harden bridge lifecycle (macOS virtual ports, self-provisioned) — daemon timeout/retry folds into Phase D
+- [x] B4: Concurrency — atomic changelog persist + concurrent-append test; PeakWatcher confirmed lock-safe
+- [x] B5: Improve mix-doctor level-valid gating so partial diagnosis is clearly surfaced (not silent)
+- [x] B6: FLBridge cleanup on crash/exit (atexit + __del__; no orphaned MIDI ports)
 
 ## Phase C — macOS Full-Parity Implementation
 - [ ] C1: macOS trigger/focus stack — AppleScript activation + hotkey (preferred)

@@ -79,6 +79,13 @@ def register(mcp: FastMCP) -> None:
             fetch_all_pages(get_bridge(), protocol.CMD_MIXER_LIST_TRACKS, "tracks"),
             "tracks", "fl_get_mixer_state"))
 
+    @mcp.resource("fl://capabilities")
+    def capabilities() -> dict:
+        """What this install automates vs. needs a manual step (per OS/transport).
+        Pure/env-based, so it answers even when FL is closed."""
+        from ..capabilities import describe_capabilities
+        return _safe(describe_capabilities)
+
     @mcp.resource("fl://patterns")
     def patterns() -> dict:
         """Pattern list (1-based index + name), capped."""
