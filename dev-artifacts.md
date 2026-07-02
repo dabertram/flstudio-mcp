@@ -22,7 +22,11 @@ needs a persisted project. Keep the count ≤ 10 and list each here.
 
 | Change | Where | Revert step |
 |--------|-------|-------------|
-| — | (none yet) | |
+| venv created | `.venv/` (gitignored) | `rm -rf .venv` |
+| editable install + dev deps | `.venv` | remove venv |
+| controller script deployed | `~/Documents/Image-Line/FL Studio/Settings/Hardware/FLStudioMCP/device_FLStudioMCP.py` | delete that folder if uninstalling |
+| seeded note-bridge script | `~/Documents/Image-Line/FL Studio/Settings/Piano roll scripts/MCP_Apply.pyscript` | delete file if uninstalling |
+| daemon running (virtual MIDI ports) | terminal, `fl-studio-mcp-daemon` (FLSTUDIO_MCP_VIRTUAL_PORTS=1) | stop the process (Ctrl+C / kill) |
 
 ## Notes
 - Calibration cache (when implemented) persists under `~/.flstudio-mcp/` — safe to delete/rebuild.
