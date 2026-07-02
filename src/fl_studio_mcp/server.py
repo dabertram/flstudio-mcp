@@ -42,6 +42,7 @@ from .tools import presets as presets_tools
 from .tools import resources as resource_defs
 from .tools import routing as routing_tools
 from .tools import transport as transport_tools
+from .tools import vst as vst_tools
 
 logger = logging.getLogger("fl_studio_mcp")
 
@@ -101,6 +102,7 @@ def build_server() -> FastMCP:
     presets_tools.register(mcp)     # Preset suggester: read preset names from disk
     mix_doctor_tools.register(mcp)  # Mix Doctor: diagnose whole mix + gated apply-fixes
     capabilities_tools.register(mcp)  # Capability introspection: automated vs manual per OS
+    vst_tools.register(mcp)         # Generic deep VST/AU control: overview, calibrate, unit-set
     # Later tool packs register here as they ship:
     #   pattern_tools.register(mcp)
     return mcp
