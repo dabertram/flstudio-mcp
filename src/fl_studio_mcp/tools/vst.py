@@ -18,6 +18,7 @@ from pydantic import Field
 from .. import protocol, safety
 from ..connection import fetch_all_pages, get_bridge
 from ..music import calibration as cal
+from ..music import vst_intents as vin
 from ..music import vst_params as vpm
 from .plugin import resolve_param_index
 
@@ -130,5 +131,69 @@ def register(mcp: FastMCP) -> None:
             result["target"] = target
             result["unit"] = res.get("unit")
             result["applied_norm"] = round(norm, 4)
+            result["achieved"] = after.get("s", "")
+        return result
+
+    @mcp.tool(annotations={"title": "Apply a semantic plugin intent", **_WR})
+    def fl_plugin_intent(
+        track: Annotated[int, Field(ge=0)],
+        slot: Annotated[int, _SLOT],
+        intent: Annotated[str, Field(description="Musical move: brighter, darker, "
+            "more_resonance, less_resonance, more_attack, less_attack, "
+            "slower_release, faster_release, wider, narrower, more_drive, less_drive.")],
+        amount: Annotated[float, Field(ge=0.0, le=1.0,
+            description="Strength 0..1 (0.5 = moderate).")] = 0.5,
+    ) -> dict:
+        """Shape ANY plugin by intent, without knowing its param names: locate
+        the relevant knob by keyword (e.g. 'brighter' -> filter cutoff),
+        calibrate it, and nudge it in the right direction/amount. Reversible via
+        fl_rollback_last_change. Returns the param it moved + achieved value.
+        Falls back with a clear message if no matching param or it's opaque."""
+        spec = vin.resolve_intent(intent)
+        if not spec:
+            return {"ok": False, "error": "unknown intent %r" % intent,
+                    "valid_intents": vin.list_intents()}
+        bridge = get_bridge()
+        plugin, total, first = _first_page(bridge, track, slot)
+        dump = fetch_all_pages(bridge, protocol.CMD_PLUGIN_GET_PARAMS, "params",
+                               {"track": track, "slot": slot})
+        params = dump.get("params", [])
+        target_param = vin.pick_param(params, spec["keywords"])
+        if not target_param:
+            return {"ok": False, "intent": intent, "plugin": plugin,
+                    "error": "no parameter matching %s found on %r; try "
+                             "fl_plugin_find_params to locate it manually."
+                             % (list(spec["keywords"]), plugin)}
+        idx = int(target_param["i"])
+        res = cal.calibrate_param(bridge, track, slot, idx, plugin_name=plugin,
+                                  param_count=total, sample_names=[p["name"] for p in first])
+        curve = res.get("curve") or {}
+        pts = curve.get("points") or []
+        if not curve.get("monotonic") or not pts:
+            return {"ok": False, "intent": intent, "plugin": plugin,
+                    "param": target_param.get("name"),
+                    "error": "target param isn't cleanly calibratable; adjust it "
+                             "manually via fl_plugin_set_param."}
+        cur_norm = target_param.get("v", 0.0)
+        current_value = cal.norm_to_value(curve, cur_norm)
+        vrange = (pts[0][1], pts[-1][1])
+        new_value = vin.relative_target(current_value, spec, amount, vrange)
+        norm = max(0.0, min(1.0, float(cal.value_to_norm(curve, new_value))))
+        scope = "plugin_param:%d:%d:%d" % (track, slot, idx)
+        result = safety.safe_write(
+            bridge, tool="plugin_intent", scope=scope,
+            command=protocol.CMD_PLUGIN_SET_PARAM,
+            params={"track": track, "slot": slot, "param": idx, "value": norm},
+            build_restore=lambda b: {"command": protocol.CMD_PLUGIN_SET_PARAM,
+                                     "params": {"track": track, "slot": slot,
+                                                "param": idx, "value": b["v"]}})
+        if isinstance(result, dict):
+            after = bridge.call(protocol.CMD_PLUGIN_GET_PARAM,
+                                {"track": track, "slot": slot, "param": idx})
+            result["intent"] = intent
+            result["param"] = {"index": idx, "name": target_param.get("name")}
+            result["unit"] = res.get("unit")
+            result["from_value"] = round(current_value, 3)
+            result["to_value"] = round(new_value, 3)
             result["achieved"] = after.get("s", "")
         return result
