@@ -282,6 +282,7 @@ class FLBridge:
         request_id = protocol.new_request_id()
         request = protocol.make_request(command, params)
         encoded = protocol.encode_message(DIR_REQUEST, request_id, request)
+        eff_timeout = timeout or protocol.command_timeout(command)
 
         slot = _Slot()
         with self._lock:
@@ -290,10 +291,10 @@ class FLBridge:
         try:
             msg = mido.Message("sysex", data=encoded)
             self._out_port.send(msg)
-            if not slot.event.wait(timeout or self.default_timeout):
+            if not slot.event.wait(eff_timeout):
                 raise FLTimeout(
                     "FL Studio did not respond to %r within %.1fs."
-                    % (command, timeout or self.default_timeout)
+                    % (command, eff_timeout)
                 )
             resp = slot.payload or {}
             if resp.get("ok"):
@@ -435,7 +436,7 @@ class TCPBridge:
         *,
         timeout: float | None = None,
     ) -> Any:
-        t = timeout or self.default_timeout
+        t = timeout or protocol.command_timeout(command)
         try:
             resp = self._rpc(
                 {"op": "call", "cmd": command, "params": params, "timeout": t},

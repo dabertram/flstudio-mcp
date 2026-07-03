@@ -64,3 +64,13 @@ class TestSysExCodec:
     def test_bad_request_id_raises(self):
         with pytest.raises(ValueError):
             protocol.encode_message(protocol.DIR_REQUEST, "short", {})
+
+
+class TestCommandTimeout:
+    def test_heavy_commands_get_headroom(self):
+        assert protocol.command_timeout(protocol.CMD_GET_PROJECT_STATE) == protocol.HEAVY_TIMEOUT_SECONDS
+        assert protocol.command_timeout(protocol.CMD_PLUGIN_GET_PARAMS) == protocol.HEAVY_TIMEOUT_SECONDS
+
+    def test_normal_commands_use_default(self):
+        assert protocol.command_timeout(protocol.CMD_PING) == protocol.DEFAULT_TIMEOUT_SECONDS
+        assert protocol.command_timeout(protocol.CMD_SET_TEMPO) == protocol.DEFAULT_TIMEOUT_SECONDS

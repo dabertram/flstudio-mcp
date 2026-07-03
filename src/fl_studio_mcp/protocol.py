@@ -40,6 +40,11 @@ HEARTBEAT_STALE_SECONDS = 3.0
 # Server-side timeout for any single command round trip.
 DEFAULT_TIMEOUT_SECONDS = 5.0
 
+# Heavier reads (aggregate project state, big paginated lists, VST param dumps)
+# can legitimately take longer on large projects, so they get more headroom
+# than the 5 s default. Callers may still pass an explicit timeout to override.
+HEAVY_TIMEOUT_SECONDS = 15.0
+
 # How often the FL controller emits a heartbeat SysEx.
 HEARTBEAT_INTERVAL_SECONDS = 0.5
 
@@ -170,6 +175,26 @@ CMD_CHANNEL_GET_GRID = "channel_get_grid"              # getGridBit per step
 CMD_CHANNEL_GET_GRID_BIT = "channel_get_grid_bit"      # one bit (for safe_write snapshot)
 CMD_CHANNEL_SET_GRID_BIT = "channel_set_grid_bit"      # setGridBit(channel, step, value)
 CMD_CHANNEL_CLEAR_GRID = "channel_clear_grid"          # setGridBit 0 across steps
+
+
+# Commands whose round trip can be slow on large projects (aggregate reads, big
+# paginated lists, VST param dumps) -> a longer default timeout than 5 s.
+_HEAVY_COMMANDS = frozenset({
+    CMD_GET_PROJECT_STATE,
+    CMD_MIXER_LIST_TRACKS,
+    CMD_CHANNEL_LIST,
+    CMD_PLUGIN_GET_PARAMS,
+    CMD_MIXER_GET_ROUTING_ALL,
+    CMD_CHANNEL_GET_GRID,
+    CMD_PLAYLIST_TRACK_LIST,
+    CMD_ARRANGE_GET_MARKERS,
+})
+
+
+def command_timeout(command: str) -> float:
+    """Default timeout for a command class; heavy reads get more headroom.
+    An explicit per-call timeout always overrides this."""
+    return HEAVY_TIMEOUT_SECONDS if command in _HEAVY_COMMANDS else DEFAULT_TIMEOUT_SECONDS
 
 
 # ---------------------------------------------------------------------------
