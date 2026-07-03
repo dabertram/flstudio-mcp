@@ -74,7 +74,7 @@ def register(mcp: FastMCP) -> None:
         result = describe_load_limitation(name, as_generator)
         if attempt_focus:
             try:
-                from .._trigger_darwin import find_fl_app, _activate
+                from .._trigger_darwin import _activate, find_fl_app
                 app = find_fl_app()
                 result["focus_attempt"] = {"app": app, "focused": bool(app and _activate(app))}
             except Exception as e:
