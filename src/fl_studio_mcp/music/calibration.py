@@ -131,13 +131,14 @@ def sweep_param(bridge, track, slot, index, steps=DEFAULT_STEPS):
     try:
         for k in range(steps):
             norm = round(k / (steps - 1), 6)
-            res = bridge.call(protocol.CMD_PLUGIN_SET_PARAM,
-                              {"track": track, "slot": slot, "param": index, "value": norm})
-            s = res.get("s")
-            if not s:
-                got = bridge.call(protocol.CMD_PLUGIN_GET_PARAM,
-                                  {"track": track, "slot": slot, "param": index})
-                s = got.get("s")
+            bridge.call(protocol.CMD_PLUGIN_SET_PARAM,
+                        {"track": track, "slot": slot, "param": index, "value": norm})
+            # Read the display string on a FRESH call: FL commits many plugin
+            # writes on a LATER script-tick, so the SET response's own "s" can be
+            # the stale pre-write value. A separate GET reads the settled value.
+            got = bridge.call(protocol.CMD_PLUGIN_GET_PARAM,
+                              {"track": track, "slot": slot, "param": index})
+            s = got.get("s")
             parsed = parse_value_string(s)
             val, unit = to_canonical(parsed["value"], parsed["unit"]) \
                 if parsed["value"] is not None else (None, None)
