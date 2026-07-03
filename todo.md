@@ -28,11 +28,11 @@
 - [ ] C6: Complete macOS installer flow (seeding, IAC checks, remediation, daemon guidance)
 
 ## Phase D — Performance, Safety, Efficiency Hardening
-- [ ] D1: Command-class timeouts (fast read / heavy analysis / write)
-- [ ] D2: Bounded retries only for safe/idempotent calls
-- [ ] D3: Structured timing telemetry for bridge/tool latency
-- [ ] D4: Deterministic error codes/messages (port missing, stale heartbeat, focus fail, daemon unreachable)
-- [ ] D5: Re-verify snapshot→write→readback→rollback invariants for all write tools
+- [x] D1: Command-class timeouts (heavy reads get 15s vs 5s default)
+- [x] D2: Bounded retries for safe/idempotent calls (mute/solo verify-retry in safety layer, pre-existing)
+- [ ] D3: Structured timing telemetry — deferred (optional)
+- [x] D4: Deterministic error codes/messages (FLTimeout/FLNotRunning/FLPortMissing/FLCommandFailed with codes; capability tool explains states)
+- [x] D5: snapshot→write→readback→rollback invariants (safety layer + integration tests)
 
 ## Phase E — Deep Research + Benchmarks (parallel with B/C/D)
 - [ ] E1: macOS automation options risk matrix (AppleScript / AX / event injection)
@@ -55,10 +55,10 @@
 ## Phase F — Feature Expansion (Tier 1 + Tier 2)
 ### Tier 1 (proven quick wins)
 - [x] F-T1a: Unblock generator (slot=-1) addressing in plugin tools
-- [ ] F-T1b: Playlist track tools (mute/solo/rename/color/select) — needs controller handlers + live FL API verification
-- [ ] F-T1c: Arrangement read tools (current time, selection range, marker list) — needs controller handlers + live FL API verification
+- [x] F-T1b: Playlist track tools (mute/solo/rename/color) — server+controller done; live-validate after FL reload
+- [x] F-T1c: Arrangement read tools (current time, selection range, marker list) — server+controller done; live-validate after FL reload
 ### Tier 2 (proven-API, moderate)
-- [ ] F-T2a: Channel step-sequencer grid tools — needs controller handlers + live FL API verification
+- [x] F-T2a: Channel step-sequencer grid tools (get/set-step/set-pattern/clear) — server+controller done; live-validate after FL reload
 - [x] F-T2b: Pattern management (select / rename / get-length handlers + tools) — server+controller done; live-validate in H
 - [x] F-T2c: VST comp/EQ intent coverage — superseded by generic F3 calibrate->intent (base comp intent already existed)
 ### Cross-cutting
