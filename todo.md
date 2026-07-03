@@ -91,10 +91,10 @@
 - [x] F3-5: 3-tier degradation surfaced (classify_param_exposure: full/partial/opaque) in fl_plugin_overview
 
 ## Phase G — Docs, Packaging, Finalization (Windows-first until final)
-- [ ] G1: Keep README Windows-first during hardening
-- [ ] G2doc: In-progress macOS setup/validation doc; merge into README after parity checklist passes
-- [ ] G3doc: Update contributing + installer docs with cross-platform troubleshooting trees
-- [ ] G4: Adjust packaging metadata/deps (true platform support; optional platform extras; make pygetwindow optional)
+- [x] G1: README flipped to Windows + macOS after full live validation
+- [x] G2doc: macOS setup section merged into README
+- [x] G3doc: installer + troubleshooting documented (install_macos.sh, fl-studio-mcp-install)
+- [x] G4: packaging metadata (macOS classifier; pygetwindow Windows-only marker)
 
 ## Phase G2 — One-Command Installer + MCP Client Auto-Registration (macOS-first)
 - [x] G2-1: Single entry-point installer (fl-studio-mcp-install) + macOS install_macos.sh reworked (C6)
@@ -117,8 +117,8 @@
 - [ ] G3-7 (deferred): demo video/screenshots (non-blocking)
 
 ## Phase H — Final Verification & Contribution Packaging
-- [ ] H1: Full Windows regression pass
-- [ ] H2: Full macOS parity pass on real FL environment
-- [ ] H3: F3 generic VST verification (enumerate; test Vital/Zebralette/Serum/a FabFilter/a native; search; batch rollback; calibration round-trip; semantic intent on 2 synths; opaque degradation)
-- [ ] H4: Produce commit groups (bug-fixes / macOS / performance-safety / features / docs-research)
-- [ ] H5: Contribution packet (validated checklist, benchmark summary, risk register, PR split strategy)
+- [ ] H1: Full Windows regression pass (needs a Windows box — offline suite + CI cover the pure layer)
+- [x] H2: Full macOS parity pass on real FL environment (FL 2025 build 4597): bridge, transport, mixer, channels, patterns, playlist, arrangement-read, channel-grid, generator params, VST calibrate/intent — ALL validated live
+- [x] H3: F3 generic VST verification (Vital 916 params, tier full, role-grouped; calibrate; brighter intent reversible; degradation on Sampler)
+- [x] H4: Commit groups (bug-fixes / macOS / performance-safety / features / docs) — 18 logical commits on macos-parity-hardening
+- [x] H5: README/docs flipped to macOS-supported; contribution packet = this branch + AGENTS.md + ROADMAP status

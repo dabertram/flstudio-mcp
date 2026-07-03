@@ -6,7 +6,7 @@
 ![status](https://img.shields.io/badge/status-beta-yellow)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![python](https://img.shields.io/badge/python-3.10+-blue)
-![platform](https://img.shields.io/badge/platform-Windows-blue)
+![platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-blue)
 ![FL Studio](https://img.shields.io/badge/FL%20Studio-2025%2B-orange)
 
 ![Claude diagnosing and fixing a mix in FL Studio](docs/demo.gif)
@@ -74,16 +74,18 @@ These are properties of FL Studio's scripting API, stated plainly:
 
 ## Requirements
 
-- **Windows 10/11** (tested on Windows 11)
+- **Windows 10/11** or **macOS** (tested: Windows 11 + FL 2025 build 5319; macOS + FL 2025 build 4597)
 - **FL Studio 2025** or newer
 - **Claude Desktop** (or any MCP client)
 - **Python 3.10+**
-- **loopMIDI** — for the two virtual MIDI ports ([download](https://www.tobias-erichsen.de/software/loopmidi.html))
+- Virtual MIDI ports named `FLStudioMCP RX` / `FLStudioMCP TX`:
+  - **Windows** — create them in **loopMIDI** ([download](https://www.tobias-erichsen.de/software/loopmidi.html)).
+  - **macOS** — none needed: the daemon **self-creates** them via CoreMIDI (no IAC Driver setup).
 - Optional: **ffmpeg** on PATH (for MP3 analysis)
 
-macOS and Linux are not yet supported — contributions welcome.
-
 ## Setup
+
+### Windows
 
 1. **Create two virtual MIDI ports** in loopMIDI, named exactly `FLStudioMCP RX` and `FLStudioMCP TX`.
 
@@ -126,6 +128,35 @@ macOS and Linux are not yet supported — contributions welcome.
 
 Verify the connection by asking Claude to call `fl_ping`.
 
+### macOS
+
+macOS needs **no IAC Driver setup** — the daemon creates the virtual MIDI ports itself.
+
+1. **Install everything:**
+   ```bash
+   git clone https://github.com/rosasynthesiz/flstudio-mcp
+   cd flstudio-mcp
+   scripts/install_macos.sh
+   ```
+   This deploys the controller script, seeds `MCP_Apply`, and installs the server.
+
+2. **Start the daemon** (creates the `FLStudioMCP RX`/`TX` ports and holds them):
+   ```bash
+   fl-studio-mcp-daemon
+   ```
+
+3. **Configure FL Studio** — Options > MIDI Settings: enable `FLStudioMCP RX` (input, Controller type **FLStudioMCP**) and `FLStudioMCP TX` (output) with the **same** port number. `View > Script output` should show `[FLStudioMCP] Ready`. (After a controller-script update, restart FL to reload it.)
+
+4. **Register with your MCP client** — run `fl-studio-mcp-install` to detect installed clients (Claude Desktop, Cursor, …) and register the server safely, or add it manually (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+   ```json
+   { "mcpServers": { "fl-studio": { "command": "fl-studio-mcp",
+                                    "env": { "FLSTUDIO_MCP_TRANSPORT": "tcp" } } } }
+   ```
+
+5. **Note writing** — open the piano roll and run **MCP_Apply** once per session; grant **Accessibility** permission (System Settings > Privacy & Security > Accessibility) so the trigger hotkey reaches FL.
+
+Ask your client to call `fl_ping`, or run `python scripts/test_bridge.py`.
+
 ## Troubleshooting
 
 | Symptom | Fix |
@@ -159,6 +190,6 @@ MIT — see [LICENSE](LICENSE).
 
 ## Status & contributing
 
-Beta — the public 1.0 release. Windows-only for now; macOS and Linux contributions are welcome. Issues and pull requests: [github.com/rosasynthesiz/flstudio-mcp](https://github.com/rosasynthesiz/flstudio-mcp).
+Beta — the public 1.0 release. Runs on **Windows and macOS**; Linux contributions are welcome. Issues and pull requests: [github.com/rosasynthesiz/flstudio-mcp](https://github.com/rosasynthesiz/flstudio-mcp).
 
 <!-- mcp-name: io.github.rosasynthesiz/flstudio-mcp -->
