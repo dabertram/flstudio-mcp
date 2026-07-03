@@ -34,6 +34,7 @@ from .tools import color as color_tools
 from .tools import compose as compose_tools
 from .tools import export as export_tools
 from .tools import grid as grid_tools
+from .tools import loader as loader_tools
 from .tools import mix_doctor as mix_doctor_tools
 from .tools import mixing as mixing_tools
 from .tools import phase1 as phase1_tools
@@ -107,6 +108,7 @@ def build_server() -> FastMCP:
     vst_tools.register(mcp)         # Generic deep VST/AU control: overview, calibrate, unit-set
     playlist_tools.register(mcp)    # Playlist track control + arrangement read (Tier 1)
     grid_tools.register(mcp)        # Channel step-sequencer grid (Tier 2)
+    loader_tools.register(mcp)      # Plugin loading: capability-aware (explains FL API limit)
     # Later tool packs register here as they ship:
     #   pattern_tools.register(mcp)
     return mcp
