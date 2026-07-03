@@ -33,10 +33,12 @@ from .tools import chains as chains_tools
 from .tools import color as color_tools
 from .tools import compose as compose_tools
 from .tools import export as export_tools
+from .tools import grid as grid_tools
 from .tools import mix_doctor as mix_doctor_tools
 from .tools import mixing as mixing_tools
 from .tools import phase1 as phase1_tools
 from .tools import pianoroll as pianoroll_tools
+from .tools import playlist as playlist_tools
 from .tools import plugin as plugin_tools
 from .tools import presets as presets_tools
 from .tools import resources as resource_defs
@@ -103,6 +105,8 @@ def build_server() -> FastMCP:
     mix_doctor_tools.register(mcp)  # Mix Doctor: diagnose whole mix + gated apply-fixes
     capabilities_tools.register(mcp)  # Capability introspection: automated vs manual per OS
     vst_tools.register(mcp)         # Generic deep VST/AU control: overview, calibrate, unit-set
+    playlist_tools.register(mcp)    # Playlist track control + arrangement read (Tier 1)
+    grid_tools.register(mcp)        # Channel step-sequencer grid (Tier 2)
     # Later tool packs register here as they ship:
     #   pattern_tools.register(mcp)
     return mcp
