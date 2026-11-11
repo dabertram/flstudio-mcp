@@ -25,6 +25,7 @@ from fastmcp import FastMCP
 from . import __version__
 from .connection import list_ports
 from .protocol import port_from_fl_name, port_to_fl_name
+from .tools import app as app_tools
 from .tools import arrange as arrange_tools
 from .tools import audio as audio_tools
 from .tools import bulk as bulk_tools
@@ -109,6 +110,7 @@ def build_server() -> FastMCP:
     playlist_tools.register(mcp)    # Playlist track control + arrangement read (Tier 1)
     grid_tools.register(mcp)        # Channel step-sequencer grid (Tier 2)
     loader_tools.register(mcp)      # Plugin loading: capability-aware (explains FL API limit)
+    app_tools.register(mcp)         # FL Studio process control: start/stop/status (OS-level)
     # Later tool packs register here as they ship:
     #   pattern_tools.register(mcp)
     return mcp
