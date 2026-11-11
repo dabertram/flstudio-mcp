@@ -131,14 +131,16 @@ so it ships inside the wheel.
 
 - [ ] `skills/flstudio-production/SKILL.md` orchestration layer with deep
       content in `references/`. Under 500 lines.
-- [ ] `evals/evals.json` — 10 questions exercising the full tool surface.
+- [x] `evals/evals.json` — 10 questions exercising the full tool surface
+      (15 prompts, incl. Tier 1/2, deep VST control and app process control).
 - [ ] `.claude-plugin/marketplace.json` so this can live in
       `rosasynthesiz-skills` as an installable plugin.
 - [x] `AGENTS.md` describing the agentic workflow for future Claude sessions
       working on this codebase.
 - [ ] Demo video and screenshots in `docs/`.
 - [x] GitHub Actions for linting and the standalone bridge tests (mock FL).
-- [ ] Pin a known-working FL Studio version range in README.
+- [x] Pin a known-working FL Studio version range in README
+      (FL 2025: Windows build 5319, macOS build 4597).
 
 ## Cross-platform hardening (2026, in progress on `macos-parity-hardening`)
 
@@ -158,10 +160,15 @@ foundation and a generic deep VST control layer. Shipped so far:
 - **Setup**: `fl-studio-mcp-install` detects MCP clients and registers the
   server safely (backup + idempotent merge).
 
-Remaining (needs a live FL session to validate): playlist/arrangement-read/
-channel-grid controller handlers, per-synth curated param maps, and the
-end-to-end macOS parity pass. README support messaging stays Windows-first
-until that validation completes.
+- **App control**: `fl_studio_start` / `fl_studio_stop` / `fl_studio_status`
+  (OS-level, Windows + macOS), reported in `fl_capabilities`.
+
+The end-to-end macOS parity pass (FL 2025 build 4597) is done and README
+support messaging lists Windows + macOS. Remaining (needs a live FL session):
+re-validation of the playlist/arrangement-read/channel-grid/pattern handlers
+after the latest controller reload, per-synth curated param maps, macOS
+trigger fallbacks (hotkey-only / manual mode), benchmarks, and a full Windows
+regression pass.
 
 ## Out of scope (intentionally)
 

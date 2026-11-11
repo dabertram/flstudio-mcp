@@ -1,0 +1,21 @@
+{
+  "name": "flstudio-mcp",
+  "description": "Eval prompts covering the full post-expansion tool surface. Each needs a live FL session; expected_tools lists the tools a correct run should call.",
+  "evals": [
+    {"id": "transport-basic", "prompt": "Set the tempo to 128 BPM, start playback, then tell me the song position.", "expected_tools": ["fl_ping", "fl_set_tempo", "fl_play", "fl_get_song_position"]},
+    {"id": "app-status", "prompt": "Is FL Studio running? If not, start it.", "expected_tools": ["fl_studio_status", "fl_studio_start"]},
+    {"id": "capabilities", "prompt": "What can you automate on this machine and what do I have to do by hand?", "expected_tools": ["fl_capabilities"]},
+    {"id": "mixer-levels", "prompt": "Turn the kick mixer track down 3 dB and pan the hats 20% left.", "expected_tools": ["fl_get_mixer_state", "fl_set_mixer_volume", "fl_set_mixer_pan"]},
+    {"id": "mix-doctor", "prompt": "Diagnose my mix and apply only the safe fixes.", "expected_tools": ["fl_diagnose_mix", "fl_apply_mix_fix"]},
+    {"id": "routing", "prompt": "Route the vocal channel to mixer track 5 and show me all routing.", "expected_tools": ["fl_set_route", "fl_get_routing_all"]},
+    {"id": "playlist-tracks", "prompt": "Rename playlist track 2 to 'Drums', color it red and solo it.", "expected_tools": ["fl_playlist_tracks", "fl_playlist_rename_track", "fl_playlist_set_track_color", "fl_playlist_solo_track"]},
+    {"id": "arrangement-read", "prompt": "List the arrangement markers and the current selection range.", "expected_tools": ["fl_arrangement_markers", "fl_arrangement_selection"]},
+    {"id": "step-grid", "prompt": "Program a four-on-the-floor kick on channel 0 in the current pattern.", "expected_tools": ["fl_channel_clear_grid", "fl_channel_set_steps", "fl_channel_get_grid"]},
+    {"id": "patterns", "prompt": "Select pattern 3, rename it 'Chorus' and tell me its length.", "expected_tools": ["fl_pattern_select", "fl_pattern_rename", "fl_pattern_get_length"]},
+    {"id": "vst-overview", "prompt": "Which parameters of the synth on channel 1 can you control, grouped by role?", "expected_tools": ["fl_plugin_overview", "fl_plugin_find_params"]},
+    {"id": "vst-intent", "prompt": "Make the generator on channel 1 brighter, reversibly.", "expected_tools": ["fl_plugin_calibrate_param", "fl_plugin_intent", "fl_rollback_last_change"]},
+    {"id": "vst-batch", "prompt": "Set cutoff to 2 kHz and resonance to 30% on the Vital instance as one undoable change.", "expected_tools": ["fl_plugin_set_params", "fl_plugin_set_param_value"]},
+    {"id": "raga-melody", "prompt": "Write an 8-bar devotional melody in Mohanam starting on D into the piano roll.", "expected_tools": ["fl_write_raga_melody"]},
+    {"id": "limits", "prompt": "Load Serum on a new channel.", "expected_tools": ["fl_load_plugin"], "expected_behaviour": "explains the FL API cannot load plugins and offers the manual step"}
+  ]
+}

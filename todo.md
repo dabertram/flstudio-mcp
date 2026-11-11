@@ -24,7 +24,7 @@
 - [ ] C2: Fallback — hotkey-only with deterministic user-visible prompt
 - [ ] C3: Last resort — manual apply mode with explicit capability signal in tool responses
 - [ ] C4: Keep Windows trigger path intact behind platform module boundary + shared interface
-- [ ] C5: Capability introspection endpoint/resource (what is automated vs manual per OS)
+- [x] C5: Capability introspection endpoint/resource (what is automated vs manual per OS) — fl_capabilities + fl://capabilities, incl. app_control block
 - [ ] C6: Complete macOS installer flow (seeding, IAC checks, remediation, daemon guidance)
 
 ## Phase D — Performance, Safety, Efficiency Hardening
@@ -37,11 +37,11 @@
 ## Phase E — Deep Research + Benchmarks (parallel with B/C/D)
 - [ ] E1: macOS automation options risk matrix (AppleScript / AX / event injection)
 - [ ] E2: MIDI transport robustness + recovery across IAC/loopMIDI/python-rtmidi/mido
-- [ ] E3: Missing-functionality feasibility scan within FL API limits
+- [x] E3: Missing-functionality feasibility scan within FL API limits — docs/DESIGN_DECISIONS.md
 - [ ] E4: Benchmarks — p50/p95/p99 latency for read/write tools
 - [ ] E5: Benchmarks — burst throughput
 - [ ] E6: Benchmarks — FL restart + MIDI port disruption recovery timing
-- [ ] E7: Convert findings into accepted/rejected design decisions with rationale
+- [x] E7: Convert findings into accepted/rejected design decisions with rationale — docs/DESIGN_DECISIONS.md
 
 ## Phase F2 — Test, CI & Quality Infrastructure (EARLY, before Phase F)
 - [x] F2-1: Add pytest config + tests/ tree
@@ -108,12 +108,12 @@
 - [x] G2-9: Uninstall/deregister path (--uninstall) using same idempotent logic
 
 ## Phase G3 — ROADMAP Integration
-- [ ] G3-1: Fold GitHub Actions (lint + mock-FL tests) into F2 CI (single source of truth)
-- [ ] G3-2: Pin known-working FL version range in README (tested mac + Win builds)
-- [ ] G3-3: AGENTS.md for future contributors (concise)
-- [ ] G3-4: evals/evals.json covering full post-expansion tool surface (incl. new Tier 1/2 + F3 tools)
+- [x] G3-1: Fold GitHub Actions (lint + mock-FL tests) into F2 CI (single source of truth) — .github/workflows/ci.yml is the only workflow
+- [x] G3-2: Pin known-working FL version range in README (tested mac + Win builds) — FL 2025, Win build 5319 / macOS build 4597
+- [x] G3-3: AGENTS.md for future contributors (concise)
+- [x] G3-4: evals/evals.json covering full post-expansion tool surface (incl. new Tier 1/2 + F3 tools) — 15 prompts, tool names validated
 - [ ] G3-5: Marketplace/registry packaging (.claude-plugin/marketplace.json + MCP registry server.json alignment) coordinated w/ G2 installer
-- [ ] G3-6: Reconcile ROADMAP checkboxes with current shipped state
+- [x] G3-6: Reconcile ROADMAP checkboxes with current shipped state
 - [ ] G3-7 (deferred): demo video/screenshots (non-blocking)
 
 ## Phase H — Final Verification & Contribution Packaging
