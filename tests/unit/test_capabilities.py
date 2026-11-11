@@ -40,6 +40,12 @@ def test_virtual_ports_note_toggles(monkeypatch):
     assert rep["midi_ports"]["virtual_ports_enabled"] is False
 
 
+def test_app_control_block():
+    rep = capabilities.describe_capabilities()
+    ac = rep["app_control"]
+    assert ac["supported"] is (rep["platform"] in ("win32", "darwin"))
+
+
 @pytest.mark.skipif(sys.platform != "darwin", reason="macOS-specific note")
 def test_darwin_mentions_accessibility():
     rep = capabilities.describe_capabilities()

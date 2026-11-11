@@ -55,6 +55,7 @@ def describe_capabilities() -> dict:
                                "automate this)"),
             "piano_roll_scripts_dir": find_piano_roll_scripts_dir(),
         },
+        "app_control": _app_control(plat),
         "automated": _automated(plat),
         "manual_steps": _manual_steps(plat, virtual),
         "fl_api_limits": [
@@ -64,6 +65,20 @@ def describe_capabilities() -> dict:
             "preset recall is walled off for some VSTs (e.g. Serum)",
         ],
     }
+
+
+def _app_control(plat: str) -> dict:
+    """OS-level FL process control (fl_studio_start/stop/status) per platform."""
+    if plat == "win32":
+        return {"supported": True,
+                "method": "launch FL64.exe; WM_CLOSE (graceful) or taskkill (force)",
+                "note": None}
+    if plat == "darwin":
+        return {"supported": True,
+                "method": "`open -a` launch; AppleScript quit (graceful) or pkill (force)",
+                "note": None}
+    return {"supported": False, "method": None,
+            "note": "FL Studio has no native Linux build; start it yourself"}
 
 
 def _automated(plat: str) -> list[str]:
