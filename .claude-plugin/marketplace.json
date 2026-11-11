@@ -1,0 +1,19 @@
+{
+  "name": "flstudio-mcp",
+  "owner": {"name": "rosasynthesiz"},
+  "plugins": [
+    {
+      "name": "flstudio-mcp",
+      "description": "Control FL Studio with Claude: in-DAW mixing, diagnosis, routing, and composition.",
+      "version": "1.0.0",
+      "source": "./",
+      "skills": ["./skills/flstudio-production"],
+      "mcpServers": {
+        "fl-studio": {
+          "command": "fl-studio-mcp",
+          "env": {"FLSTUDIO_MCP_TRANSPORT": "tcp"}
+        }
+      }
+    }
+  ]
+}
